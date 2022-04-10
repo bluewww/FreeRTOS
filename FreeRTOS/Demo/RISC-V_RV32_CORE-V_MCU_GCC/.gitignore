@@ -1,0 +1,14 @@
+*.o
+*.hex
+*.lst
+*.stim
+*.map
+*.su
+*.veri
+rtosdemo*
+gvsim/
+sim/
+sim-*/
+TAGS
+*.log
+hello_world
