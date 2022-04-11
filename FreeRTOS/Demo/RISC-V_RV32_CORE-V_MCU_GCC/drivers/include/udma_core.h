@@ -24,6 +24,7 @@
  */
 
 #include "target.h"
+#include "bits.h"
 #include "udma.h"
 #include "udma_ctrl.h"
 
@@ -50,9 +51,20 @@ static inline void udma_enqueue_channel(udma_channel_t *chan, uint32_t addr,
 
 static inline void udma_channel_clear(udma_channel_t *chan)
 {
-	/* TODO: adjust macro */
 	hal_write32(&(chan->cfg), REG_SET(UDMA_CORE_RX_CFG_CLR, 1));
 }
+
+
+static inline void udma_can_enqueue(udma_channel_t *chan)
+{
+	return !REG_GET(UDMA_CORE_RX_CFG_PENDING, hal_read32(&(chan->cfg)));
+}
+
+static inline void udma_busy(udma_channel_t *chan)
+{
+	return REG_GET(UDMA_CORE_RX_CFG_EN, hal_read32(&(chan->cfg)));
+}
+
 
 static inline void udma_deinit_device(uint32_t device_id)
 {

@@ -65,6 +65,19 @@ typedef struct {
 #define UART_SETUP_STOP_BITS_MASK  (0x8)
 #define UART_SETUP_STOP_BITS_SHIFT (3)
 
+/* Set polling mode:
+  - 1'b0: disable
+  - 1'b1: Enable polling data transfer. Wait until valid register signals ok,
+    then read data register. Valid register automatically cleared after read.*/
+#define UART_SETUP_POLLING_EN_MASK  (0x10)
+#define UART_SETUP_POLLING_EN_SHIFT (4)
+
+/* Set clean fifo mode:
+  - 1'b0: disable
+  - 1'b1: clean the rx fifo */
+#define UART_SETUP_CLEAN_FIFO_MASK  (0x20)
+#define UART_SETUP_CLEAN_FIFO_SHIFT (5)
+
 /* Set TX transceiver state:
   - 1'b0: disable
   - 1'b1: enable */

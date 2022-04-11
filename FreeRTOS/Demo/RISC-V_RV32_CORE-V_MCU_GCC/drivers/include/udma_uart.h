@@ -25,20 +25,6 @@
 #include "udma_ctrl.h"
 #include "bits.h"
 
-/*
- * pi_task:
- * data[0] = l2_buf
- * data[1] = size
- * data[2] = channel
- * data[3] = repeat_size
- * data[4] = device_id (used for delegation)
- */
-struct uart_itf_data_s {
-	struct pi_task *fifo_head[2]; /*!< 0 = RX | 1 = TX. */
-	struct pi_task *fifo_tail[2]; /*!< 0 = RX | 1 = TX. */
-	uint32_t nb_open;   /*!< Number of times device has been opened. */
-	uint32_t device_id; /*!< Device ID. */
-};
 
 /*! UART udma configuration. */
 static inline void uart_udma_channel_set(uint32_t device_id, uint32_t l2_buf,
@@ -146,14 +132,15 @@ static inline void hal_uart_clkdiv_set(uint32_t device_id, uint16_t clk_div)
 static inline void hal_uart_setup_set(uint32_t device_id, uint16_t clk_div,
 				      uint8_t rx_ena, uint8_t tx_ena,
 				      uint8_t stop_bits, uint8_t bit_length,
-				      uint8_t parity_ena)
+				      uint8_t parity_ena, uint8_t polling_ena)
 {
 	uint32_t setup = REG_SET(UART_SETUP_CLKDIV, clk_div) |
 			 REG_SET(UART_SETUP_RX_ENA, rx_ena) |
 			 REG_SET(UART_SETUP_TX_ENA, tx_ena) |
 			 REG_SET(UART_SETUP_STOP_BITS, stop_bits) |
 			 REG_SET(UART_SETUP_BIT_LENGTH, bit_length) |
-			 REG_SET(UART_SETUP_PARITY_ENA, parity_ena);
+			 REG_SET(UART_SETUP_PARITY_ENA, parity_ena) |
+			 REG_SET(UART_SETUP_POLLING_ENA, polling_ena);
 	uart_setup_set(device_id, setup);
 }
 

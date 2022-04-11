@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 ETH Zurich, University of Bologna
+ * Copyright (C) 2022 ETH Zurich, University of Bologna
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,39 +14,44 @@
  * limitations under the License.
  */
 
-#include "config.h"
-#include "pulp.h"
 #include <stddef.h>
 
 #include "udma.h"
+#include "udma_uart.h"
+#include "uart_periph.h"
 
 void *memcpy(void *dest, const void *src, size_t n);
 
-void uart_wait_tx_done(int periph)
+void uart_wait_tx_done(uint32_t device_id)
 {
 	/* we don't care if the uart is done, we just want to know whether we
 	 * can queue another transfer. Thats why don't also poll for
 	 * hal_uart_tx_busy() here. */
 
-	while (!plp_udma_canEnqueue(
-		UDMA_UART_TX_ADDR(periph - ARCHI_UDMA_UART_ID(0)))) {
+	while (!udma_can_enqueue(&(uart(device_id)->tx))) {
 	}
 }
 
 
-static void uart_wait_rx_done(int periph)
+static void uart_wait_rx_done(uint32_t device_id)
 {
-	while (plp_udma_busy(
-		UDMA_UART_RX_ADDR(periph - ARCHI_UDMA_UART_ID(0)))) {
+	while (udma_busy(&(uart(device_id)->rx)) {
 	}
 }
 
 
-static void uart_setup(int channel, int baudrate)
+static void uart_setup(uint32_t device_id, int baudrate)
 {
 	int div = (PERIPH_FREQUENCY + baudrate / 2) / baudrate;
 
-	hal_uart_setup(channel - ARCHI_UDMA_UART_ID(0), 0, 1, div - 1);
+	hal_uart_setup_set(device_id,
+			   /* clk_div */ div - 1,
+			   /* rx_ena */ 1,
+			   /* tx_ena */ 1,
+			   /* stop_bits */ 0,
+			   /* bit_length */ 0x3,
+			   /* parity_ena */ 0,
+			   /* polling_ena */ 1);
 }
 
 
